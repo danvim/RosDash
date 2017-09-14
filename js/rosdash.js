@@ -69,6 +69,7 @@ function RosCon(settings = {}) {
     this._url = settings.url || "ws://10.10.10.100:9090";
     this._topics = {};
     this._validations = {};
+    this._messageTemplates = {};
     this.validationFails = [];
 
     /**
@@ -163,7 +164,7 @@ RosCon.prototype = {
                      * @example
                      * <pre><code>
                      * //Assigns message.a.data to dashboardData.x and message.b.data to dashboardData.y.
-                     * //The JavaScript ES6 destructive assignment. (much slower performance)
+                     * //The JavaScript ES6 destructuring assignment. (much slower performance)
                      * function(message, dashboardData){
                      *     ({
                      *         a:{data:dashboardData.x},
@@ -318,6 +319,36 @@ RosCon.prototype = {
 
     onMessageValidationFail(message) {
         window.alert(message.message);
+    },
+
+    /**
+     * Saves a message template for later extension.
+     * @see extendMessage
+     * @param {string} templateName This name is used later for retrieving this template. The suggestion is to use the message type as template's name.
+     * @param {function} returnCb This function should return a template message object.
+     * @return {boolean}
+     */
+    addMessageTemplate(templateName, returnCb) {
+        if (typeof returnCb !== "function") {
+            console.error("[ERROR] message template call 2nd argument is not a function");
+            return false;
+        }
+        this._messageTemplates[templateName] = returnCb;
+    },
+
+    /**
+     * Generate a full message from a saved template.
+     * @see addMessageTemplate
+     * @param {string} templateName This is used to retrieve the previously saved template.
+     * @param {object} obj Properties of this object is copied to the template message object.
+     * @return {object}
+     */
+    extendMessage(templateName, obj) {
+        let template = this._messageTemplates[templateName];
+        for (let prop in obj) {
+            template[prop] = obj[prop];
+        }
+        return template;
     },
 
     onConnect() {},
