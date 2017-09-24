@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <title>Dashboard</title>
     <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/font-awesome.min.css" rel="stylesheet">
+    <link href="css/beluga.css" rel="stylesheet">
+    <link href="css/beluga-font.css" rel="stylesheet">
 </head>
 <body>
 <div id="dashboard-root">
@@ -13,8 +16,11 @@
             <dropdown-item value="b">B</dropdown-item>
             <dropdown-item value="c">C</dropdown-item>
         </dropdown>
+        <circular-indicator degree="30" :model="c1">Left Motor</circular-indicator>
+        <state-indicator :model="s1"></state-indicator>
     </div>
 </div>
+<script src="js/roslib.js"></script>
 <script src="js/vue.js"></script>
 <script src="js/rosdash.js"></script>
 <script src="js/jquery.js"></script>

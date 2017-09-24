@@ -86,7 +86,7 @@ Vue.js is a framework that manages a "virtual DOM". It performs way better than 
    ```html
    <main id="dashboard-root">
        <span>Reverse Mode: {{data.gearshift_reverse_mode}}</span>
-       <button typoe="button" v-on:click="toggleReverseMode()">Toggle reverse mode</button>
+       <button type="button" v-on:click="toggleReverseMode()">Toggle reverse mode</button>
    </main>
    ```
 

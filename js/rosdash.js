@@ -43,12 +43,172 @@ Vue.component("dropdown-item", {
     }
 });
 
+Vue.component("circular-indicator", {
+    template: `
+<div class="circle-indicator-wrapper">
+    <div class="circle-indicator">
+        <div class="circle-indicator-container-outer" :class="{negative: outerNegative}">
+            <div class="circle-indicator-container circle-indicator-container-right circle-indicator-container-outer-right">
+                <div class="circle-indicator-wedge" :style="{transform: 'rotate(' + rotationOuterRight + 'deg)'}"></div>
+            </div>
+            <div class="circle-indicator-container circle-indicator-container-left circle-indicator-container-outer-left">
+                <div class="circle-indicator-wedge" :style="{transform: 'rotate(' + rotationOuterLeft + 'deg)'}"></div>
+            </div>
+        </div>
+        <div class="circle-indicator-partition"></div>
+        <div class="circle-indicator-container-inner" :class="{negative: innerNegative}">
+            <div class="circle-indicator-container circle-indicator-container-right circle-indicator-container-inner-right">
+                <div class="circle-indicator-wedge" :style="{transform: 'rotate(' + rotationInnerRight + 'deg)'}"></div>
+            </div>
+            <div class="circle-indicator-container circle-indicator-container-left circle-indicator-container-inner-left">
+                <div class="circle-indicator-wedge" :style="{transform: 'rotate(' + rotationInnerLeft + 'deg)'}"></div>
+            </div>
+        </div>
+        <div class="circle-indicator-text">{{percent}}%</div>
+        <i class="fa fa-fw fa-arrow-up" :style="{display: arrowDisplay, transform: 'rotate(' + arrowDegree + 'deg)'}"></i>
+    </div>
+    <figure><slot></slot></figure>
+</div>
+`,
+    props: {
+        model: Object, //{inner: Number, outer: Number, total: Number, degree: Number||undefined}
+    },
+    data: function () {
+        return {
+
+        }
+    },
+    methods: {
+        _leftRotation: function (value, total) {
+            return (() => {
+                if (value >= total / 2) {
+                    return (-total + value) / total;
+                } else if (value >= 0) {
+                    return -0.5
+                } else if (value >= -total / 2) {
+                    return value / total + 0.5
+                } else {
+                    return 0
+                }
+            })() * 360;
+        },
+        _rightRotation: function (value, total) {
+            return (() => {
+                if (value >= total / 2) {
+                    return 0;
+                } else if (value >= 0) {
+                    return ((-total + value) / total + 0.5)
+                } else if (value >= -total / 2) {
+                    return -0.5;
+                } else {
+                    return value / total
+                }
+            })() * 360;
+        }
+    },
+    computed: {
+        rotationOuterRight: function () {
+            return this._rightRotation(this.model.outer, this.model.total);
+        },
+        rotationOuterLeft: function () {
+            return this._leftRotation(this.model.outer, this.model.total);
+
+        },
+        rotationInnerRight: function () {
+            return this._rightRotation(this.model.inner, this.model.total);
+        },
+        rotationInnerLeft: function () {
+            return this._leftRotation(this.model.inner, this.model.total);
+        },
+        outerNegative: function () {
+            return this.model.outer < 0;
+        },
+        innerNegative: function () {
+            return this.model.inner < 0;
+        },
+        percent: function () {
+            return Math.round(this.model.inner / this.model.total * 100);
+        },
+        arrowDisplay: function () {
+            return this.model.inner !== 0 && !isNaN(this.model.degree) ? "block" : "none";
+        },
+        arrowDegree: function () {
+            return this.model.inner > 0 ? this.model.degree : 180 + this.model.degree
+        }
+    }
+});
+
+Vue.component("state-indicator", {
+    template: `
+<div class="state-indicator" :class="onOff">
+    <i class="fa fa-fw fa-4x" :class="faIcon"></i>
+    <figure>{{text}}</figure>
+</div>`,
+    data: function() {
+        return {
+        }
+    },
+    props: {
+        model: Object//{current: String, states: {state_a: {text: String, icon: String, rating: "on"||"off"},...}}
+    },
+    methods: {
+        _getCurrentState: function() {
+            return this.model.states[this.model.current]
+        }
+    },
+    computed: {
+        faIcon: function() {
+            return this._getCurrentState().icon;
+        },
+        text: function() {
+            return this._getCurrentState().text;
+        },
+        onOff: function() {
+            return this._getCurrentState().rating || (this.model.current == 0 ? "off" : "on");
+        }
+    }
+});
 
 /**
  * Vue instance that wraps the dashboard element
  */
 let Dashboard = new Vue({
-    el: "#dashboard-root"
+    el: "#dashboard-root",
+    data: {
+        arbitraryI: 0,
+        c1: {
+            inner: 30,
+            outer: 60,
+            total: 1,
+            degree: 30
+        },
+        s1: {
+            current: 0,
+            states: {
+                0: {
+                    text: "State 0",
+                    icon: "fa-spin fa-warning",
+                    rating: "off"
+                },
+                1: {
+                    text: "State 1",
+                    icon: "fa-book",
+                    rating: "on"
+                }
+            }
+        }
+    },
+    methods: {
+        spinTheCircularIndicator: function () {
+            this.arbitraryI += 0.01;
+            this.c1.inner = Math.sin(this.arbitraryI);
+            this.c1.outer = Math.cos(this.arbitraryI);
+            requestAnimationFrame(this.spinTheCircularIndicator);
+        }
+    },
+    mounted: function () {
+        requestAnimationFrame(this.spinTheCircularIndicator);
+    }
 });
 
 
@@ -83,13 +243,13 @@ function RosCon(settings = {}) {
      */
     this.strictValidation = settings.strictValidation || false;
 
-    this.onMessageValidationFail = settings.onMessageValidationFail || this.onMessageValidationFail();
+    this.onMessageValidationFail = settings.onMessageValidationFail || this.onMessageValidationFail;
 
-    this.onConnect = settings.onConnect;
-    this.onError = settings.onError;
-    this.onClose = settings.onClose;
+    this.onConnect = settings.onConnect || function () {};
+    this.onError = settings.onError || function () {};
+    this.onClose = settings.onClose || function () {};
 
-    this.ros = new ROSLIB.Ros({url: rosConnections._url});
+    this.ros = new ROSLIB.Ros({url: this._url});
 
     let $this = this;
 

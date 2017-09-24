@@ -1,0 +1,107 @@
+@font-face {
+  font-family: 'beluga';
+  src:
+          url('../fonts/beluga.ttf?dusdgd') format('truetype'),
+          url('../fonts/beluga.woff?dusdgd') format('woff'),
+          url('../fonts/beluga.svg?dusdgd#beluga') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+
+.beluga {
+  /* use !important to prevent issues with browser extensions that change fonts */
+  font-family: 'beluga' !important;
+  speak: none;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+
+  /* Better Font Rendering =========== */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.beluga-key-r1:before {
+  content: "\e903";
+}
+.beluga-key-r2:before {
+  content: "\e904";
+}
+.beluga-key-x:before {
+  content: "\e905";
+}
+.beluga-key-y:before {
+  content: "\e906";
+}
+.beluga-key-start:before {
+  content: "\e907";
+}
+.beluga-stick-l:before {
+  content: "\e908";
+}
+.beluga-stick-l-horizontal:before {
+  content: "\e909";
+}
+.beluga-stick-l-vertical:before {
+  content: "\e90a";
+}
+.beluga-stick-r:before {
+  content: "\e90b";
+}
+.beluga-stick-r-horizontal:before {
+  content: "\e90c";
+}
+.beluga-stick-r-vertical:before {
+  content: "\e90d";
+}
+.beluga-key-back:before {
+  content: "\e90e";
+}
+.beluga-dpad:before {
+  content: "\e90f";
+}
+.beluga-dpad-down:before {
+  content: "\e910";
+}
+.beluga-dpad-left:before {
+  content: "\e911";
+}
+.beluga-dpad-right:before {
+  content: "\e912";
+}
+.beluga-dpad-up:before {
+  content: "\e913";
+}
+.beluga-key-a:before {
+  content: "\e914";
+}
+.beluga-key-b:before {
+  content: "\e915";
+}
+.beluga-key-home:before {
+  content: "\e916";
+}
+.beluga-key-l1:before {
+  content: "\e917";
+}
+.beluga-key-l2:before {
+  content: "\e918";
+}
+.beluga-claw:before {
+  content: "\e902";
+}
+.beluga-reverse:before {
+  content: "\e900";
+}
+.beluga-turtle:before {
+  content: "\e901";
+}
+.beluga-rabbit:before {
+  content: "\e919";
+}
+.beluga-cheetah:before {
+  content: "\e91a";
+}
+
