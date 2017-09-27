@@ -78,7 +78,7 @@ Vue.js is a framework that manages a "virtual DOM". It performs way better than 
    });
    ```
 
-   The `rosDash.listen()` function accepts a `ROSLIB.Topic` instance and a callback function to assign values into the data object within the `dashboard` Vue.js instance. In this way, information from Ros may be displayed swiftly by Vue.js using data binding.
+   The `rosDash.listen()` function accepts a `ROSLIB.Topic` instance and a callback function to assign values into the data object within the `Dashboard` Vue.js instance. In this way, information from ROS may be displayed swiftly by Vue.js using data binding.
 
 4. Publish messages to ROS topic.
 
@@ -105,11 +105,11 @@ Vue.js is a framework that manages a "virtual DOM". It performs way better than 
        },
        methods: {
            toggleReverseMode: function() {
-               let new_reverse_mode = !dashboard.data.gearshift_reverse_mode;
+               let new_reverse_mode = !this.data.gearshift_reverse_mode; //this in a Vue.js method refers to the Vue.js instance itself, i.e. Dashboard here.
                rosCon.publish("gui/gearshift", {
-                   reverse_mode: {data: {dashboard.data.gearshift_reverse_mode = new_reverse_mode}},
-                   speed_mode: {data: {dashboard.data.gearshift_speed_mode}},
-                   camera_profile_current: {data: {dashboard.data.camera_profile_current}}
+                   reverse_mode: {data: this.data.gearshift_reverse_mode = new_reverse_mode},
+                   speed_mode: {data: this.data.gearshift_speed_mode},
+                   camera_profile_current: {data: this.data.camera_profile_current}
                });
            }
        }
