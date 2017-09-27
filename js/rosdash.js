@@ -169,52 +169,6 @@ Vue.component("state-indicator", {
     }
 });
 
-/**
- * Vue instance that wraps the dashboard element
- */
-let Dashboard = new Vue({
-    el: "#dashboard-root",
-    data: {
-        arbitraryI: 0,
-        c1: {
-            inner: 30,
-            outer: 60,
-            total: 1,
-            degree: 30
-        },
-        s1: {
-            current: 0,
-            states: {
-                0: {
-                    text: "State 0",
-                    icon: "fa-spin fa-warning",
-                    rating: "off"
-                },
-                1: {
-                    text: "State 1",
-                    icon: "fa-book",
-                    rating: "on"
-                }
-            }
-        }
-    },
-    methods: {
-        spinTheCircularIndicator: function () {
-            this.arbitraryI += 0.01;
-            this.c1.inner = Math.sin(this.arbitraryI);
-            this.c1.outer = Math.cos(this.arbitraryI);
-            requestAnimationFrame(this.spinTheCircularIndicator);
-        }
-    },
-    mounted: function () {
-        requestAnimationFrame(this.spinTheCircularIndicator);
-    }
-});
-
-
-
-
-
 
 /**
  * RosCon.listen(topicName, messageType, translationObject)
@@ -237,24 +191,48 @@ function RosCon(settings = {}) {
      * @type {boolean}
      */
     this.validationFlag = settings.validationFlag || false;
+
     /**
      * Prevents messages from publishing if validation for that message type used in the topic is not set.
      * @type {boolean}
      */
     this.strictValidation = settings.strictValidation || false;
 
+    /**
+     * Function that gets triggered when a message fails validation
+     * @type {function({message: String})}
+     */
     this.onMessageValidationFail = settings.onMessageValidationFail || this.onMessageValidationFail;
 
+    /**
+     * Function that gets triggered when dashboard app successfully connects to ROS
+     * @type {function()}
+     */
     this.onConnect = settings.onConnect || function () {};
+
+    /**
+     * Function that gets triggered when dashboard app fails to connect to ROS
+     * @type {function()}
+     */
     this.onError = settings.onError || function () {};
+
+    /**
+     * Function that gets triggered when dashboard app closes connection to ROS
+     * @type {function()}
+     */
     this.onClose = settings.onClose || function () {};
 
+    /**
+     * ROSLIB instance
+     */
     this.ros = new ROSLIB.Ros({url: this._url});
 
     let $this = this;
 
+    //General messages for debugging
+
     this.ros.on('connection', function () {
-        console.info('[STATUS] Connected to websocket server.');
+        console.info('[STATUS] Connected to websocket server at ' + $this._url);
         $this.onConnect();
     });
     this.ros.on('error', function (error) {
@@ -265,12 +243,13 @@ function RosCon(settings = {}) {
         console.info('[STATUS] Connection to websocket server closed.');
         setTimeout(()=>{
             $this.ros.connect($this._url);
-        },1000);
+        }, 1000);
         $this.onClose();
     });
 }
 
 RosCon.prototype = {
+
     /**
      * Makes sure the ROSLIB Topic is registered. If the Topic is not registered, it will be registered.
      *
@@ -467,16 +446,25 @@ RosCon.prototype = {
      * }</pre>
      * @param topicName
      * @param validationSettings
-     * @return {*}
+     * @return {object}
      */
     setValidation(topicName, validationSettings) {
         return this._validations[topicName] = validationSettings;
     },
 
+    /**
+     * Retrieves validation object created by {@link setValidation}.
+     * @param topicName
+     * @return {object}
+     */
     getValidation(topicName) {
         return this._validations[topicName];
     },
 
+    /**
+     * Default error handling function to trigger when message fails validation.
+     * @param message
+     */
     onMessageValidationFail(message) {
         window.alert(message.message);
     },
@@ -511,10 +499,19 @@ RosCon.prototype = {
         return template;
     },
 
+    /**
+     * Default function to trigger when dashboard app successfully connects to ROS
+     */
     onConnect() {},
 
+    /**
+     * Default function to trigger when dashboard app fails to connect to ROS
+     */
     onError() {},
 
+    /**
+     * Default function to trigger when dashboard app closes connection to ROS
+     */
     onClose() {}
 };
 

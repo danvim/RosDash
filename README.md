@@ -29,7 +29,7 @@ Vue.js is a framework that manages a "virtual DOM". It performs way better than 
    ```
    Instantiate a Vue.js instance and declare initial values for fields in the message files. You may make up your own names for the properties, but the suggested way is to suffix the field name after the message type/purpose.
    ```javascript
-   let dashboard = new Vue({
+   let Dashboard = new Vue({
        el: "#dashboard-root", //root of the Vue.js element
        data: {
            data: { //Collection of all data from ROS
@@ -43,28 +43,27 @@ Vue.js is a framework that manages a "virtual DOM". It performs way better than 
    ```
 
 2. Bind values to DOM by creating templates under the root specified when creating the Vue.js instance. In this case, it's `#dashboard-root`.
+
+   ##### HTML source
+
    ```html
    <main id="dashboard-root">
        <!--A really basic Vue.js template string.-->
        <span>Reverse Mode: {{data.gearshift_reverse_mode}}</span>
    </main>
    ```
-   The above template is converted to a proper DOM element when the Vue.js element is properly initiated, with the handlebars(`{{...}}`) be made into a one way binding text that updates when `dashboard.data.gearshift_reverse_mode` is properly updated by properly assigning values. *(Vue.js uses **getters** and **setters** to dynamically bind DOM values when the JavaScript properties are changed. Changing stored data without accessing getters and setters would not inform Vue.js to update dependencies. You may read more about getters and setters on [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/set).)*
+   The above template is converted to a proper DOM element when the Vue.js element is properly initiated, with the handlebars(`{{...}}`) be made into a one way binding text that updates when `Dashboard.data.gearshift_reverse_mode` is properly updated by properly assigning values. *(Vue.js uses **getters** and **setters** to dynamically bind DOM values when the JavaScript properties are changed. Changing stored data without accessing getters and setters would not inform Vue.js to update dependencies. You may read more about getters and setters on [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/set).)*
+
+   ##### Rendered DOM
 
    ```HTML
-   <!--DOM when dashboard is just initiated.-->
+   <!--DOM when Dashboard is just initiated.-->
    <main id="dashboard-root">
        <span>Reverse Mode: false</span>
    </main>
    ```
 
-3. Create a `RosCon` instance.
-
-   ```javascript
-   let rosCon = new RosCon({vue: dashboard});
-   ```
-
-4. Listen to the ROS topic.
+3. Listen to the ROS topic.
 
    ```javascript
    rosDash.listen(new ROSLIB.Topic({
@@ -81,7 +80,7 @@ Vue.js is a framework that manages a "virtual DOM". It performs way better than 
 
    The `rosDash.listen()` function accepts a `ROSLIB.Topic` instance and a callback function to assign values into the data object within the `dashboard` Vue.js instance. In this way, information from Ros may be displayed swiftly by Vue.js using data binding.
 
-5. Publish messages to ROS topic.
+4. Publish messages to ROS topic.
 
    ```html
    <main id="dashboard-root">
@@ -97,10 +96,10 @@ Vue.js is a framework that manages a "virtual DOM". It performs way better than 
        messageType: "beluga_msgs/Gearshift"
    }));
 
-   let dashboard = new Vue({
+   let Dashboard = new Vue({
        el: "#dashboard-root", //root of the Vue.js element
        data: {
-           data: { //Collection of all data from ROS
+           data: { //Initialization of collection of all data to be exchanged with ROS
                //...
            }
        },
@@ -118,3 +117,142 @@ Vue.js is a framework that manages a "virtual DOM". It performs way better than 
    ```
 
 With the above steps, the whole listening and publishing cycle is complete, although there are other methods in the library to explore and use.
+
+## Preset Vue.js Components
+
+### Understanding Vue.js Components
+
+Vue.js allows users to define HTML template components in JavaScript so that they can type custom HTML tags within the Vue.js root node before initializing the Vue.js instance, and the template will take over and generate the correct DOM according to the set template. To illustrate this, here is an example:
+
+##### JavaScript (before Vue.js instance initialization)
+
+```javascript
+Vue.component('custom-tag-name', {
+    template:
+`<div class="some-class">
+	<h1>{{myprop}}</h1>
+	<slot></slot>
+</div>`,
+    /*
+    The <slot> tag will transform into whatever content you put within your custom tag.
+    Otherwise, {{}} templates will render out computed values, data, props, etc.
+    */
+  
+    //Some possible properties of this components
+  
+    /*
+    Beware that props are read-only when the components are initialized.
+    If you want the rendered value to change, assign the value of the prop to a data when "mounted".
+    */
+    props: {
+        "myprop": String
+    },
+    data: function() {
+        return {}
+    },
+    methods: {},
+    computed: {},
+    mounted: function() {},
+    //...
+});
+```
+
+##### HTML source
+
+```html
+<div id="dashboard-root">
+    <custom-tag-name myprop="some heading">
+        <code>Hello World!</code>
+    </custom-tag-name>
+</div>
+```
+
+##### Rendered DOM
+
+```html
+<div id="dashboard-root">
+    <div class="some-class">
+        <h1>some heading</h1>
+        <code>Hello World!</code>
+    </div>
+</div>
+```
+
+### RosDash Preset Components
+
+#### Circular Indicator
+
+The circular indicator is a ring indicator consisting of an outer thin ring and an inner thick ring, percentage text and a short descriptive title, with also an optional degree setting to indicate direction. The rings can indicate positive and negative numerical values.
+
+The circular indicator was created to indicate motor direction and values, so it is most fitted at least to display motor information.
+
+##### Attributes
+
+-   `model: Object` - The data model of the view component. *(Read on MVC data structure)*
+
+    ```javascript
+    let model = {
+        /**Inner ring value*/
+        inner: Number,
+      
+        /**Outer ring value*/
+        outer: Number,
+      
+        /**Total value. Acts as denominator of inner and outer value, to calculate percentage*/
+        total: Number,
+      
+        /**Degree the arrow points to when inner value is positive. Flips direction when inner value is negative. Will not show arrow if inner value is 0 or degree is not a number*/
+        degree: Number || undefined
+    }
+    ```
+
+##### Content
+
+Content of this element will become the descriptive title of the indicator.
+
+##### Usages
+
+```html
+<circular-indicator :model="c1">Left Motor</circular-indicator>
+```
+
+**Notes**: `c1` is the model that already exists in the data of the Vue.js instance. `:model=""` is short-hand for `v-bind:model=""` which double binds the data object to the element's attribute.
+
+#### State Indicator
+
+The state indicator indicates states using color, icon and text. The indicator's icon can be icons from icon fonts such as Font Awesome.
+
+##### Attributes
+
+-   `model: Object` - The data model of the view component.
+
+    ```javascript
+    let model = {
+        //current state by state id
+        current: Number || String,
+        states: {
+            state_id_custom_name_1: {
+                /**state description*/
+                text: String,
+                /**Font Awesome fa-xxx classes*/
+                icon: String,
+                /**Whether the icon lights up or not*/
+                rating: "on" || "off"
+            },
+           state_id_custom_name_2: {/*...*/},
+           //...
+        }
+    }
+    ```
+
+##### Content
+
+*Content is not used for this element.*
+
+##### Usages
+
+```html
+<state-indicator :model="s1"></state-indicator>
+```
+
+**Notes**: `s1` is the model that already exists in the data of the Vue.js instance.

@@ -8,7 +8,9 @@
     <link href="css/beluga.css" rel="stylesheet">
     <link href="css/beluga-font.css" rel="stylesheet">
 </head>
+
 <body>
+<!-- Dashboard root -->
 <div id="dashboard-root">
     <div class="col-2">
         <dropdown id="this">
@@ -16,15 +18,18 @@
             <dropdown-item value="b">B</dropdown-item>
             <dropdown-item value="c">C</dropdown-item>
         </dropdown>
-        <circular-indicator degree="30" :model="c1">Left Motor</circular-indicator>
+        <circular-indicator :model="c1">Left Motor</circular-indicator>
         <state-indicator :model="s1"></state-indicator>
     </div>
 </div>
+<!-- Libraries -->
 <script src="js/roslib.js"></script>
 <script src="js/vue.js"></script>
 <script src="js/rosdash.js"></script>
 <script src="js/jquery.js"></script>
 <script src="js/popper.min.js"></script>
 <script src="js/bootstrap.min.js"></script>
+<!-- Dashboard initialization and settings go here: -->
+<script src="js/app.js"></script>
 </body>
 </html>
