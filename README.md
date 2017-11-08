@@ -1,5 +1,7 @@
 # RosDash
 
+**Detailed documentation exists in `/docs/`**
+
 ## Author
 
 Daniel Cheung
