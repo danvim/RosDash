@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Home - Documentation</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="RosCon.html">RosCon</a><ul class='methods'><li data-type='method'><a href="RosCon.html#addMessageTemplate">addMessageTemplate</a></li><li data-type='method'><a href="RosCon.html#confirmTopicExists">confirmTopicExists</a></li><li data-type='method'><a href="RosCon.html#extendMessage">extendMessage</a></li><li data-type='method'><a href="RosCon.html#getTopicByName">getTopicByName</a></li><li data-type='method'><a href="RosCon.html#getValidation">getValidation</a></li><li data-type='method'><a href="RosCon.html#listen">listen</a></li><li data-type='method'><a href="RosCon.html#onClose">onClose</a></li><li data-type='method'><a href="RosCon.html#onConnect">onConnect</a></li><li data-type='method'><a href="RosCon.html#onError">onError</a></li><li data-type='method'><a href="RosCon.html#onMessageValidationFail">onMessageValidationFail</a></li><li data-type='method'><a href="RosCon.html#publish">publish</a></li><li data-type='method'><a href="RosCon.html#setValidation">setValidation</a></li><li data-type='method'><a href="RosCon.html#validateMessage">validateMessage</a></li></ul></li></ul><h3>Global</h3><ul><li><a href="global.html#rosCon">rosCon</a></li></ul>
+</nav>
+
+<div id="main">
+    
+
+    
+
+
+
+    
+
+
+
+
+
+
+
+
+
+    
+
+
+    <section class="readme">
+        <article><h1>RosDash</h1><h2>Author</h2><p>Daniel Cheung</p>
+<h2>Summary on GUI Architecture</h2><p>The GUI should exist as a ROS node constructed by ROS Bridge. ROS Bridge, given its name, is exactly a bridge between the rest of ROS in C++, and the JavaScript environment, either in Node.js or simply a browser client. ROS Bridge connects to ROS by listening and pushing data using a port on a separate server than ROS master, and JavaScript connects to it via a web socket. </p>
+<h2>Introduction</h2><p>This minimal library is built on top of RosBridge to provide a easier GUI development. This library depends on <strong>Vue.js</strong>. This library suggests a particular coding style using Vue.js, and the actual number of provided methods are not many.</p>
+<p>RosDash provides an easier way to debug the JavaScript client of ROS. Because of some unknown design reasons, ROS does not return any error and ignores the JSON messages if they are not well structured and are published through RosBridge.</p>
+<h3>Understanding Vue.js</h3><p>Vue.js is a framework that manages a &quot;virtual DOM&quot;. It performs way better than simply updating DOM with methods like jQuery, which changes the inner HTML of an element, forcing the browser to update the DOM in response. Vue.js, however, strongly binds values in the DOM to a JavaScript system. Updating texts in the DOM becomes much faster through Vue.js because it directly updates the DOM, unlike jQuery.</p>
+<h2>Using RosDash</h2><p><strong>RosDash recommends centralizing all data listened from ROS, and are saved to the same place.</strong> </p>
+<ol>
+<li><p>Initializing all properties to be used to store data in a message under the Dashboard Vue.js instance.</p>
+<pre class="prettyprint source"><code># Example message file
+# Gearshift.msg
+
+std_msgs/Bool reverse_mode
+std_Int8/Int8 speed_mode
+std_msgs/Int8 camera_profile_current</code></pre><p>Instantiate a Vue.js instance and declare initial values for fields in the message files. You may make up your own names for the properties, but the suggested way is to suffix the field name after the message type/purpose.</p>
+<pre class="prettyprint source lang-javascript"><code>let Dashboard = new Vue({
+    el: &quot;#dashboard-root&quot;, //root of the Vue.js element
+    data: {
+        data: { //Collection of all data from ROS
+            //Give default values to all properties you intend to use
+            gearshift_reverse_mode: false,
+            gearshift_speed_mode: 0,
+            gearshift_camera_profile_current: 0
+        }
+    }
+});</code></pre></li>
+<li><p>Bind values to DOM by creating templates under the root specified when creating the Vue.js instance. In this case, it's <code>#dashboard-root</code>.</p>
+<h5>HTML source</h5><pre class="prettyprint source lang-html"><code>&lt;main id=&quot;dashboard-root&quot;>
+    &lt;!--A really basic Vue.js template string.-->
+    &lt;span>Reverse Mode: {{data.gearshift_reverse_mode}}&lt;/span>
+&lt;/main></code></pre><p>The above template is converted to a proper DOM element when the Vue.js element is properly initiated, with the handlebars(<code>{{...}}</code>) be made into a one way binding text that updates when <code>Dashboard.data.gearshift_reverse_mode</code> is properly updated by properly assigning values. <em>(Vue.js uses <strong>getters</strong> and <strong>setters</strong> to dynamically bind DOM values when the JavaScript properties are changed. Changing stored data without accessing getters and setters would not inform Vue.js to update dependencies. You may read more about getters and setters on <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/set">MDN</a>.)</em></p>
+<h5>Rendered DOM</h5><pre class="prettyprint source lang-HTML"><code>&lt;!--DOM when Dashboard is just initiated.-->
+&lt;main id=&quot;dashboard-root&quot;>
+    &lt;span>Reverse Mode: false&lt;/span>
+&lt;/main></code></pre></li>
+<li><p>Listen to the ROS topic.</p>
+<pre class="prettyprint source lang-javascript"><code>rosDash.listen(new ROSLIB.Topic({
+    name: &quot;teleop/gearshift&quot;,
+    messageType: &quot;beluga_msgs/Gearshift&quot;
+}), function(messageData, dashboardData) {
+    //Using the most basic method of assignment is the fastest.
+    //ES6 destructuring assignment is getting faster and by the time I'm writing this, it is quite similar to the speed of this method.
+    dashboardData.gearshift_reverse_mode = messageData.reverse_mode.data;
+    dashboardData.gearshift_speed_mode = messageData.speed_mode.data;
+    dashboardData.gearshift_camera_profile_current = messageData.camera_profile_current.data;
+});</code></pre><p>The <code>rosDash.listen()</code> function accepts a <code>ROSLIB.Topic</code> instance and a callback function to assign values into the data object within the <code>Dashboard</code> Vue.js instance. In this way, information from ROS may be displayed swiftly by Vue.js using data binding.</p>
+</li>
+<li><p>Publish messages to ROS topic.</p>
+<pre class="prettyprint source lang-html"><code>&lt;main id=&quot;dashboard-root&quot;>
+    &lt;span>Reverse Mode: {{data.gearshift_reverse_mode}}&lt;/span>
+    &lt;button type=&quot;button&quot; v-on:click=&quot;toggleReverseMode()&quot;>Toggle reverse mode&lt;/button>
+&lt;/main></code></pre><pre class="prettyprint source lang-javascript"><code>//Save topic to rosCon instance
+rosCon.confirmTopicExists(new ROSLIB.Topic({
+    name: &quot;gui/gearshift&quot;,
+    messageType: &quot;beluga_msgs/Gearshift&quot;
+}));
+
+let Dashboard = new Vue({
+    el: &quot;#dashboard-root&quot;, //root of the Vue.js element
+    data: {
+        data: { //Initialization of collection of all data to be exchanged with ROS
+            //...
+        }
+    },
+    methods: {
+        toggleReverseMode: function() {
+            let new_reverse_mode = !this.data.gearshift_reverse_mode; //this in a Vue.js method refers to the Vue.js instance itself, i.e. Dashboard here.
+            rosCon.publish(&quot;gui/gearshift&quot;, {
+                reverse_mode: {data: this.data.gearshift_reverse_mode = new_reverse_mode},
+                speed_mode: {data: this.data.gearshift_speed_mode},
+                camera_profile_current: {data: this.data.camera_profile_current}
+            });
+        }
+    }
+});</code></pre></li>
+</ol>
+<p>With the above steps, the whole listening and publishing cycle is complete, although there are other methods in the library to explore and use.</p>
+<h2>Preset Vue.js Components</h2><h3>Understanding Vue.js Components</h3><p>Vue.js allows users to define HTML template components in JavaScript so that they can type custom HTML tags within the Vue.js root node before initializing the Vue.js instance, and the template will take over and generate the correct DOM according to the set template. To illustrate this, here is an example:</p>
+<h5>JavaScript (before Vue.js instance initialization)</h5><pre class="prettyprint source lang-javascript"><code>Vue.component('custom-tag-name', {
+    template:
+`&lt;div class=&quot;some-class&quot;>
+    &lt;h1>{{myprop}}&lt;/h1>
+    &lt;slot>&lt;/slot>
+&lt;/div>`,
+    /*
+    The &lt;slot> tag will transform into whatever content you put within your custom tag.
+    Otherwise, {{}} templates will render out computed values, data, props, etc.
+    */
+
+    //Some possible properties of this components
+
+    /*
+    Beware that props are read-only when the components are initialized.
+    If you want the rendered value to change, assign the value of the prop to a data when &quot;mounted&quot;.
+    */
+    props: {
+        &quot;myprop&quot;: String
+    },
+    data: function() {
+        return {}
+    },
+    methods: {},
+    computed: {},
+    mounted: function() {},
+    //...
+});</code></pre><h5>HTML source</h5><pre class="prettyprint source lang-html"><code>&lt;div id=&quot;dashboard-root&quot;>
+    &lt;custom-tag-name myprop=&quot;some heading&quot;>
+        &lt;code>Hello World!&lt;/code>
+    &lt;/custom-tag-name>
+&lt;/div></code></pre><h5>Rendered DOM</h5><pre class="prettyprint source lang-html"><code>&lt;div id=&quot;dashboard-root&quot;>
+    &lt;div class=&quot;some-class&quot;>
+        &lt;h1>some heading&lt;/h1>
+        &lt;code>Hello World!&lt;/code>
+    &lt;/div>
+&lt;/div></code></pre><h3>RosDash Preset Components</h3><h4>Circular Indicator</h4><p>The circular indicator is a ring indicator consisting of an outer thin ring and an inner thick ring, percentage text and a short descriptive title, with also an optional degree setting to indicate direction. The rings can indicate positive and negative numerical values.</p>
+<p>The circular indicator was created to indicate motor direction and values, so it is most fitted at least to display motor information.</p>
+<h5>Attributes</h5><ul>
+<li><p><code>model: Object</code> - The data model of the view component. <em>(Read on MVC data structure)</em></p>
+<pre class="prettyprint source lang-javascript"><code>let model = {
+    /**Inner ring value*/
+    inner: Number,
+
+    /**Outer ring value*/
+    outer: Number,
+
+    /**Total value. Acts as denominator of inner and outer value, to calculate percentage*/
+    total: Number,
+
+    /**Degree the arrow points to when inner value is positive. Flips direction when inner value is negative. Will not show arrow if inner value is 0 or degree is not a number*/
+    degree: Number || undefined
+}</code></pre></li>
+</ul>
+<h5>Content</h5><p>Content of this element will become the descriptive title of the indicator.</p>
+<h5>Usages</h5><pre class="prettyprint source lang-html"><code>&lt;circular-indicator :model=&quot;c1&quot;>Left Motor&lt;/circular-indicator></code></pre><p><strong>Notes</strong>: <code>c1</code> is the model that already exists in the data of the Vue.js instance. <code>:model=&quot;&quot;</code> is short-hand for <code>v-bind:model=&quot;&quot;</code> which double binds the data object to the element's attribute.</p>
+<h4>State Indicator</h4><p>The state indicator indicates states using color, icon and text. The indicator's icon can be icons from icon fonts such as Font Awesome.</p>
+<h5>Attributes</h5><ul>
+<li><p><code>model: Object</code> - The data model of the view component.</p>
+<pre class="prettyprint source lang-javascript"><code>let model = {
+    //current state by state id
+    current: Number || String,
+    states: {
+        state_id_custom_name_1: {
+            /**state description*/
+            text: String,
+            /**Font Awesome fa-xxx classes*/
+            icon: String,
+            /**Whether the icon lights up or not*/
+            rating: &quot;on&quot; || &quot;off&quot;
+        },
+       state_id_custom_name_2: {/*...*/},
+       //...
+    }
+}</code></pre></li>
+</ul>
+<h5>Content</h5><p><em>Content is not used for this element.</em></p>
+<h5>Usages</h5><pre class="prettyprint source lang-html"><code>&lt;state-indicator :model=&quot;s1&quot;>&lt;/state-indicator></code></pre><p><strong>Notes</strong>: <code>s1</code> is the model that already exists in the data of the Vue.js instance.</p></article>
+    </section>
+
+
+
+
+
+
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Thu Nov 09 2017 01:28:43 GMT+0800 (China Standard Time) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+</body>
+</html>

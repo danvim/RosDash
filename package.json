@@ -1,0 +1,14 @@
+{
+  "name": "RosDash",
+  "version": "1.0.0",
+  "dependencies": {
+    "docdash": "^0.4.0",
+    "jsdoc": "^3.5.5"
+  },
+  "scripts": {
+    "generate-docs": "jsdoc -c ./jsdoc.json"
+  },
+  "opts": {
+    "template": "node_modules/docdash"
+  }
+}

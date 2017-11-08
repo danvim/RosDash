@@ -4,11 +4,15 @@
 
 Daniel Cheung
 
+## Summary on GUI Architecture
+
+The GUI should exist as a ROS node constructed by ROS Bridge. ROS Bridge, given its name, is exactly a bridge between the rest of ROS in C++, and the JavaScript environment, either in Node.js or simply a browser client. ROS Bridge connects to ROS by listening and pushing data using a port on a separate server than ROS master, and JavaScript connects to it via a web socket. 
+
 ## Introduction
 
 This minimal library is built on top of RosBridge to provide a easier GUI development. This library depends on **Vue.js**. This library suggests a particular coding style using Vue.js, and the actual number of provided methods are not many.
 
-RosDash provides an easier way to debug the JavaScript client of ROS. Because of some unknown design reasons, ROS does not return any error if messages are not well constructed and are published through RosBridge.
+RosDash provides an easier way to debug the JavaScript client of ROS. Because of some unknown design reasons, ROS does not return any error and ignores the JSON messages if they are not well structured and are published through RosBridge.
 
 ### Understanding Vue.js
 
