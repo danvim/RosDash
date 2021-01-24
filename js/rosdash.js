@@ -251,14 +251,14 @@ function RosCon(settings = {}) {
 RosCon.prototype = {
 
     /**
-     * Makes sure the ROSLIB Topic is registered. If the Topic is not registered, it will be registered.
+     * Makes sure the ROSLIB Topic is registered. If the Topic is not registered, it will be registered. This function is used for reusing ROSLIB Topic objects, and recall the Topic object by {@link getTopicByName}. Therefore, it is more useful when dealing with publishing from the GUI.
      *
      * @param {ROSLIB.Topic} topic A ROSLIB Topic. Create one with <code>new ROSLIB.Topic(settingsObject)</code>
      * @return {ROSLIB.Topic|boolean} Returns the topic is the topic is newly added. Otherwise, returns false.
      */
     confirmTopicExists: function(topic) {
         if (topic.name === "" || typeof topic.name === "undefined") {
-            console.error("[ERROR] Topic name must not be undefined");
+            console.error("[ERROR] Topic name must not be empty");
             return false;
         }
         if (typeof this._topics[topic.name] === "undefined")
@@ -268,7 +268,7 @@ RosCon.prototype = {
 
     /**
      * Retrieves the saved topic in RosCon. New topics may be saved by using the {@link confirmTopicExists} method.
-     * @param topicName
+     * @param {string} topicName name of the stored ROSLIB Topic object
      * @return {ROSLIB.Topic|undefined} Returns the ROSLIB Topic if it exists. Otherwise, returns undefined.
      */
     getTopicByName: function(topicName) {
@@ -326,8 +326,8 @@ RosCon.prototype = {
 
     /**
      * Custom publishing method on top of ROSLIB's publish method in their Topic object. This method provides a better debugging experience and can validate the message before sending provided the means of validation are specified beforehand. This reduces unexplained situations where Ros does not acknowledge new messages sent messages due to errors in the message data from the JavaScript side as Ros does not throw error if the message data sent is not well configured.
-     * @param topicName the name of the Ros topic. The topic must be saved through {@link confirmTopicExists}
-     * @param messageData JavaScript object that stores values in the message. It is reminded to check whether the property <code>data</code> exists when required.
+     * @param {string} topicName name of the stored ROSLIB Topic object the name of the Ros topic. The topic must be saved through {@link confirmTopicExists}
+     * @param {object} messageData JavaScript object that stores values in the message. Please be reminded to check whether the property <code>data</code> exists when required.
      * @return {boolean} Returns true when publishing through RosBridge is successful, but does not check whether message is accepted by ROS. Returns false if topic have not been saved via {@link confirmTopicExists} or fails validation.
      */
     publish(topicName, messageData) {
@@ -354,9 +354,9 @@ RosCon.prototype = {
 
     /**
      * Validates message before publishing. A validation instruction must be set before using this method.
-     * @param topicName
-     * @param messageData
-     * @return {object|boolean} Returns an object containing <code>message</code> if there is an error. Otherwise, returns false.
+     * @param {string} topicName name of the stored ROSLIB Topic object
+     * @param {object} messageData
+     * @return {object|boolean} Returns an object containing <code>message: String</code> if there is an error. Otherwise, returns <code>false</code>.
      */
     validateMessage(topicName, messageData) {
         let exceptions = {
@@ -444,8 +444,8 @@ RosCon.prototype = {
      *     props: ["heading", "depth"], //properties in an object. Ignored if data type not an object
      *     arrayLength: 3, //length of array. Ignored if data type not an array
      * }
-     * @param topicName
-     * @param validationSettings
+     * @param {string} topicName name of the stored ROSLIB Topic object
+     * @param {object} validationSettings
      * @return {object}
      */
     setValidation(topicName, validationSettings) {
@@ -454,7 +454,7 @@ RosCon.prototype = {
 
     /**
      * Retrieves validation object created by {@link setValidation}.
-     * @param topicName
+     * @param {string} topicName name of the stored ROSLIB Topic object
      * @return {object}
      */
     getValidation(topicName) {
@@ -463,7 +463,7 @@ RosCon.prototype = {
 
     /**
      * Default error handling function to trigger when message fails validation.
-     * @param message
+     * @param {object} message
      */
     onMessageValidationFail(message) {
         window.alert(message.message);
@@ -473,7 +473,7 @@ RosCon.prototype = {
      * Saves a message template for later extension.
      * @see extendMessage
      * @param {string} templateName This name is used later for retrieving this template. The suggestion is to use the message type as template's name.
-     * @param {function} returnCb This function should return a template message object.
+     * @param {function} returnCb This function should return a template message object. The function will be used to generate a fresh template whenever {@link extendMessage} is called.
      * @return {boolean}
      */
     addMessageTemplate(templateName, returnCb) {
@@ -485,7 +485,9 @@ RosCon.prototype = {
     },
 
     /**
-     * Generate a full message from a saved template.
+     * Generate a full message from a saved template. This is useful if you want to generate a correct message structure
+     * but only change partial data of such message.
+     *
      * @see addMessageTemplate
      * @param {string} templateName This is used to retrieve the previously saved template.
      * @param {object} obj Properties of this object is copied to the template message object.

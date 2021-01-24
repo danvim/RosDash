@@ -1,6 +1,7 @@
 {
     "tags": {
-        "allowUnknownTags": false
+        "allowUnknownTags": false,
+        "dictionaries": ["jsdoc","closure"]
     },
     "source": {
         "include": ["js/rosdash.js", "README.md"]
@@ -16,7 +17,7 @@
         "verbose": true
     },
     "templates": {
-        "cleverLinks": false,
+        "cleverLinks": true,
         "monospaceLinks": false
     },
     "docdash": {

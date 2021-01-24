@@ -105,7 +105,7 @@
 
 
 <div class="description">
-    <p>Constructor of <a href="RosCon.html">RosCon</a></p>
+    <p>Constructor of <a href="RosCon.html"><code>RosCon</code></a></p>
 </div>
 
 
@@ -796,7 +796,7 @@
 
             
 
-            <td class="description last"><p>This function should return a template message object.</p></td>
+            <td class="description last"><p>This function should return a template message object. The function will be used to generate a fresh template whenever <code>extendMessage</code> is called.</p></td>
         </tr>
 
     
@@ -893,7 +893,7 @@
 
 
 <div class="description">
-    <p>Makes sure the ROSLIB Topic is registered. If the Topic is not registered, it will be registered.</p>
+    <p>Makes sure the ROSLIB Topic is registered. If the Topic is not registered, it will be registered. This function is used for reusing ROSLIB Topic objects, and recall the Topic object by <code>getTopicByName</code>. Therefore, it is more useful when dealing with publishing from the GUI.</p>
 </div>
 
 
@@ -1011,7 +1011,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="rosdash.js.html">rosdash.js</a>, <a href="rosdash.js.html#line494">line 494</a>
+        <a href="rosdash.js.html">rosdash.js</a>, <a href="rosdash.js.html#line496">line 496</a>
     </li></ul></dd>
     
 
@@ -1058,7 +1058,8 @@
 
 
 <div class="description">
-    <p>Generate a full message from a saved template.</p>
+    <p>Generate a full message from a saved template. This is useful if you want to generate a correct message structure
+but only change partial data of such message.</p>
 </div>
 
 
@@ -1232,7 +1233,7 @@
 
 
 <div class="description">
-    <p>Retrieves the saved topic in RosCon. New topics may be saved by using the confirmTopicExists method.</p>
+    <p>Retrieves the saved topic in RosCon. New topics may be saved by using the <code>confirmTopicExists</code> method.</p>
 </div>
 
 
@@ -1275,13 +1276,18 @@
 
             <td class="type">
             
+                
+<span class="param-type">string</span>
+
+
+            
             </td>
 
             
 
             
 
-            <td class="description last"></td>
+            <td class="description last"><p>name of the stored ROSLIB Topic object</p></td>
         </tr>
 
     
@@ -1385,7 +1391,7 @@
 
 
 <div class="description">
-    <p>Retrieves validation object created by setValidation.</p>
+    <p>Retrieves validation object created by <code>setValidation</code>.</p>
 </div>
 
 
@@ -1428,13 +1434,18 @@
 
             <td class="type">
             
+                
+<span class="param-type">string</span>
+
+
+            
             </td>
 
             
 
             
 
-            <td class="description last"></td>
+            <td class="description last"><p>name of the stored ROSLIB Topic object</p></td>
         </tr>
 
     
@@ -1531,7 +1542,7 @@
 
 
 <div class="description">
-    <p>Listens to a ROS Topic, then updates the <code>data</code> property object in Vue Dashboard instance. Though using this method is not a necessary way to listen to a ROS topic through RosBridge, this method provides a way to debug and integrate with the Vue Dashboard instance. Performance is also greatly increased when information display is updated through data binding frameworks like Vue.</p>
+    <p>Listens to a ROS Topic, then updates the <code>data</code> property object in Vue <code>Dashboard</code> instance. Though using this method is not a necessary way to listen to a ROS topic through RosBridge, this method provides a way to debug and integrate with the Vue <code>Dashboard</code> instance. Performance is also greatly increased when information display is updated through data binding frameworks like Vue.</p>
 </div>
 
 
@@ -1650,7 +1661,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="rosdash.js.html">rosdash.js</a>, <a href="rosdash.js.html#line515">line 515</a>
+        <a href="rosdash.js.html">rosdash.js</a>, <a href="rosdash.js.html#line517">line 517</a>
     </li></ul></dd>
     
 
@@ -1734,7 +1745,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="rosdash.js.html">rosdash.js</a>, <a href="rosdash.js.html#line505">line 505</a>
+        <a href="rosdash.js.html">rosdash.js</a>, <a href="rosdash.js.html#line507">line 507</a>
     </li></ul></dd>
     
 
@@ -1818,7 +1829,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="rosdash.js.html">rosdash.js</a>, <a href="rosdash.js.html#line510">line 510</a>
+        <a href="rosdash.js.html">rosdash.js</a>, <a href="rosdash.js.html#line512">line 512</a>
     </li></ul></dd>
     
 
@@ -1985,6 +1996,11 @@
 
             <td class="type">
             
+                
+<span class="param-type">object</span>
+
+
+            
             </td>
 
             
@@ -2113,13 +2129,18 @@
 
             <td class="type">
             
+                
+<span class="param-type">string</span>
+
+
+            
             </td>
 
             
 
             
 
-            <td class="description last"><p>the name of the Ros topic. The topic must be saved through confirmTopicExists</p></td>
+            <td class="description last"><p>name of the stored ROSLIB Topic object the name of the Ros topic. The topic must be saved through <code>confirmTopicExists</code></p></td>
         </tr>
 
     
@@ -2131,13 +2152,18 @@
 
             <td class="type">
             
+                
+<span class="param-type">object</span>
+
+
+            
             </td>
 
             
 
             
 
-            <td class="description last"><p>JavaScript object that stores values in the message. It is reminded to check whether the property <code>data</code> exists when required.</p></td>
+            <td class="description last"><p>JavaScript object that stores values in the message. Please be reminded to check whether the property <code>data</code> exists when required.</p></td>
         </tr>
 
     
@@ -2161,7 +2187,7 @@
 
         
 <div class="param-desc">
-    <p>Returns true when publishing through RosBridge is successful, but does not check whether message is accepted by ROS. Returns false if topic have not been saved via confirmTopicExists or fails validation.</p>
+    <p>Returns true when publishing through RosBridge is successful, but does not check whether message is accepted by ROS. Returns false if topic have not been saved via <code>confirmTopicExists</code> or fails validation.</p>
 </div>
 
 
@@ -2286,13 +2312,18 @@
 
             <td class="type">
             
+                
+<span class="param-type">string</span>
+
+
+            
             </td>
 
             
 
             
 
-            <td class="description last"></td>
+            <td class="description last"><p>name of the stored ROSLIB Topic object</p></td>
         </tr>
 
     
@@ -2303,6 +2334,11 @@
             
 
             <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
             
             </td>
 
@@ -2450,13 +2486,18 @@
 
             <td class="type">
             
+                
+<span class="param-type">string</span>
+
+
+            
             </td>
 
             
 
             
 
-            <td class="description last"></td>
+            <td class="description last"><p>name of the stored ROSLIB Topic object</p></td>
         </tr>
 
     
@@ -2467,6 +2508,11 @@
             
 
             <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
             
             </td>
 
@@ -2498,7 +2544,7 @@
 
         
 <div class="param-desc">
-    <p>Returns an object containing <code>message</code> if there is an error. Otherwise, returns false.</p>
+    <p>Returns an object containing <code>message: String</code> if there is an error. Otherwise, returns <code>false</code>.</p>
 </div>
 
 
@@ -2711,7 +2757,7 @@
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Thu Nov 09 2017 01:28:43 GMT+0800 (China Standard Time) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Sat Nov 11 2017 17:59:27 GMT+0800 (China Standard Time) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
 </footer>
 
 <script>prettyPrint();</script>

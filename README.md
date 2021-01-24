@@ -22,6 +22,8 @@ Vue.js is a framework that manages a "virtual DOM". It performs way better than 
 
 ## Using RosDash
 
+![GUI cycle](docs/images/gui_cycle.png)
+
 **RosDash recommends centralizing all data listened from ROS, and are saved to the same place.** 
 
 1. Initializing all properties to be used to store data in a message under the Dashboard Vue.js instance.
